@@ -1,0 +1,19 @@
+{
+  "name": "fret-marketplace-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "frontend-client",
+    "mobile-pwa"
+  ],
+  "scripts": {
+    "install:all": "npm install && cd backend-api && composer install",
+    "dev:client": "npm run dev --workspace=frontend-client",
+    "dev:mobile": "npm run dev --workspace=mobile-pwa",
+    "dev:api": "cd backend-api && php artisan serve",
+    "dev": "concurrently -n API,CLIENT,MOBILE -c green,blue,magenta \"npm:dev:api\" \"npm:dev:client\" \"npm:dev:mobile\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
