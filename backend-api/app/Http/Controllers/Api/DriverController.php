@@ -45,6 +45,28 @@ class DriverController extends Controller
         return response()->json($driver->fresh());
     }
 
+    public function show(Driver $driver)
+    {
+        return response()->json($driver->load('user'));
+    }
+
+    public function toggleAvailability(Request $request)
+    {
+        $driver = $request->user()->driver;
+
+        if (!$driver) {
+            return response()->json(['message' => 'Profil chauffeur introuvable'], 404);
+        }
+
+        $driver->is_available = !$driver->is_available;
+        $driver->save();
+
+        return response()->json([
+            'message' => 'Statut de disponibilité mis à jour',
+            'is_available' => $driver->is_available
+        ]);
+    }
+
     public function profile(Request $request)
     {
         return response()->json($request->user()->driver);

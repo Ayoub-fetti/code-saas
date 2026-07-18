@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             \Illuminate\Http\Middleware\HandleCors::class,
         ]);
+        $middleware->alias([
+            'driver.profile' => \App\Http\Middleware\CheckDriverProfile::class,
+            'trial.check' => \App\Http\Middleware\CheckTrialPeriod::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BidController;
@@ -27,15 +28,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/missions/applications', [MissionController::class, 'myApplications']);
     Route::get('/missions/{mission}', [MissionController::class, 'show']);
     Route::patch('/missions/{mission}', [MissionController::class, 'update']);
+    Route::delete('/missions/{mission}', [MissionController::class, 'destroy']);
 
     // --- Offres (bids) ---
-    Route::post('/missions/{mission}/bids', [BidController::class, 'store']);
+    Route::middleware('driver.profile')->post('/missions/{mission}/bids', [BidController::class, 'store']);
     Route::post('/bids/{bid}/accept', [BidController::class, 'accept']);
     Route::post('/bids/{bid}/reject', [BidController::class, 'reject']);
 
-    // --- Chauffeur: profil + documents ---
-    Route::get('/driver/profile', [DriverController::class, 'profile']);
-    Route::post('/driver/documents', [DriverController::class, 'uploadDocuments']);
+    // --- Notifications ---
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 
     // --- Admin ---
     Route::prefix('admin')->group(function () {

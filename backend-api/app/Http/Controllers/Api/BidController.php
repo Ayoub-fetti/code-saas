@@ -7,6 +7,9 @@ use App\Models\Bid;
 use App\Models\Mission;
 use Illuminate\Http\Request;
 
+use App\Notifications\MissionStatusChanged;
+use Illuminate\Support\Facades\Notification;
+
 class BidController extends Controller
 {
     /**
@@ -44,6 +47,9 @@ class BidController extends Controller
 
         $mission->update(['status' => 'applied']);
 
+        // Notifier l'entreprise qu'une candidature a été reçue
+        $mission->company->user->notify(new MissionStatusChanged($mission, 'Une nouvelle candidature a été reçue pour votre mission ' . $mission->title));
+
         return response()->json($bid->load('driver.user'), 201);
     }
 
@@ -68,6 +74,9 @@ class BidController extends Controller
             'status' => 'in_progress',
         ]);
 
+        // Notifier le chauffeur
+        $bid->driver->user->notify(new MissionStatusChanged($mission, 'Félicitations ! Votre candidature a été acceptée pour la mission ' . $mission->title));
+
         Bid::where('mission_id', $mission->id)
             ->where('id', '!=', $bid->id)
             ->update(['status' => 'rejected']);
@@ -84,6 +93,9 @@ class BidController extends Controller
         }
 
         $bid->update(['status' => 'rejected']);
+
+        // Notifier le chauffeur
+        $bid->driver->user->notify(new MissionStatusChanged($bid->mission, 'Désolé, votre candidature pour la mission ' . $bid->mission->title . ' a été rejetée.'));
 
         return response()->json($bid);
     }

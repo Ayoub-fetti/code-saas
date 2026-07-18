@@ -131,12 +131,36 @@ class MissionController extends Controller
             return response()->json(['message' => 'Non autorisé'], 403);
         }
 
+        if ($mission->status !== 'available') {
+            return response()->json(['message' => 'Impossible de modifier une mission déjà attribuée ou terminée'], 422);
+        }
+
         $validated = $request->validate([
-            'status' => 'sometimes|in:available,applied,in_progress,completed',
+            'title' => 'sometimes|string|max:255',
+            'start_address' => 'sometimes|string',
+            'end_address' => 'sometimes|string',
+            'status' => 'sometimes|in:available,applied,in_progress,completed,cancelled',
         ]);
 
         $mission->update($validated);
 
         return response()->json($mission);
+    }
+
+    public function destroy(Request $request, Mission $mission)
+    {
+        $user = $request->user();
+
+        if ($mission->company_id !== $user->company?->id) {
+            return response()->json(['message' => 'Non autorisé'], 403);
+        }
+
+        if ($mission->status !== 'available') {
+            return response()->json(['message' => 'Impossible de supprimer une mission déjà attribuée'], 422);
+        }
+
+        $mission->delete();
+
+        return response()->json(['message' => 'Mission supprimée']);
     }
 }

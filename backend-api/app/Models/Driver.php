@@ -11,11 +11,12 @@ class Driver extends Model
 
     protected $fillable = [
         'user_id', 'license_no', 'license_type', 'cin', 'cin_photo',
-        'license_photo', 'truck_photo', 'truck_type', 'city', 'is_verified',
+        'license_photo', 'truck_photo', 'truck_type', 'city', 'is_verified', 'is_available',
     ];
 
     protected $casts = [
         'is_verified' => 'boolean',
+        'is_available' => 'boolean',
     ];
 
     public function user()

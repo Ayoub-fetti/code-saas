@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Notifications\VerifyEmail;
 
 class AuthController extends Controller
 {
@@ -47,6 +49,9 @@ class AuthController extends Controller
                 'company_name' => $request->company_name,
                 'ice' => $request->ice,
             ]);
+
+            // Envoi forcé de l'email de vérification
+            $user->notify(new VerifyEmail);
         } elseif ($request->role === 'driver') {
             Driver::create([
                 'user_id' => $user->id,
